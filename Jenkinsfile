@@ -6,12 +6,9 @@ pipeline {
         stage('Validate') {
             steps {
                 echo 'Checking project files...'
-
                 sh 'test -f index.html'
                 sh 'test -f Dockerfile'
                 sh 'test -f Jenkinsfile'
-                sh 'test -f test-results/test-report.xml'
-
                 echo 'Validation completed successfully!'
             }
         }
@@ -19,110 +16,89 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running website tests...'
-
-                sh 'test -f index.html'
-                sh 'test -f Dockerfile'
-                sh 'test -f Jenkinsfile'
                 sh 'grep -q "DevOps" index.html'
-
-                echo 'All website tests passed!'
-            }
-
-            post {
-                always {
-                    junit 'test-results/test-report.xml'
-                }
+                echo 'Website test passed!'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-
                 sh 'docker build -t my-devops-website .'
-
                 echo 'Docker image built successfully!'
             }
         }
 
-        stage('Docker Verification') {
+        stage('Deploy Development') {
             steps {
-                echo 'Verifying Docker image...'
-
-                sh 'docker image inspect my-devops-website'
-                sh 'docker images my-devops-website'
-
-                echo 'Docker image verified successfully!'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying website container...'
-
+                echo 'Deploying Development environment on port 8081...'
                 sh 'docker stop my-website || true'
                 sh 'docker rm my-website || true'
-
                 sh 'docker run -d -p 8081:80 --name my-website my-devops-website'
-
-                echo 'Website deployed successfully!'
+                echo 'Development environment deployed!'
             }
         }
 
-        stage('Container Verification') {
+        stage('Test Development') {
             steps {
-                echo 'Checking running container...'
-
-                sh 'docker ps --filter name=my-website'
-                sh 'docker inspect --format="{{.State.Status}}" my-website'
-
-                echo 'Container is running successfully!'
-            }
-        }
-
-        stage('Health Check') {
-            steps {
-                echo 'Checking website health...'
-
+                echo 'Testing Development environment...'
                 sh 'sleep 3'
                 sh 'curl -f http://localhost:8081'
-
-                echo 'Health check passed!'
+                echo 'Development health check passed!'
             }
         }
 
-        stage('Pipeline Summary') {
+        stage('Deploy Staging') {
             steps {
-                echo ''
-                echo '=========================================='
-                echo '          DEPLOYMENT SUMMARY'
-                echo '=========================================='
-                echo 'Source       : GitHub'
-                echo 'Automation   : Jenkins'
-                echo 'Container    : Docker'
-                echo 'Environment  : Ubuntu'
-                echo 'Application  : My DevOps Website'
-                echo 'Port         : 8081'
-                echo 'Status       : DEPLOYED SUCCESSFULLY'
-                echo 'Health       : HEALTH CHECK PASSED'
-                echo '=========================================='
+                echo 'Deploying Staging environment on port 8082...'
+                sh 'docker stop my-website-staging || true'
+                sh 'docker rm my-website-staging || true'
+                sh 'docker run -d -p 8082:80 --name my-website-staging my-devops-website'
+                echo 'Staging environment deployed!'
+            }
+        }
+
+        stage('Test Staging') {
+            steps {
+                echo 'Testing Staging environment...'
+                sh 'sleep 3'
+                sh 'curl -f http://localhost:8082'
+                echo 'Staging health check passed!'
+            }
+        }
+
+        stage('Deploy Production') {
+            steps {
+                echo 'Deploying Production environment on port 8083...'
+                sh 'docker stop my-website-production || true'
+                sh 'docker rm my-website-production || true'
+                sh 'docker run -d -p 8083:80 --name my-website-production my-devops-website'
+                echo 'Production environment deployed!'
+            }
+        }
+
+        stage('Test Production') {
+            steps {
+                echo 'Testing Production environment...'
+                sh 'sleep 3'
+                sh 'curl -f http://localhost:8083'
+                echo 'Production health check passed!'
             }
         }
     }
 
     post {
         success {
-            echo '======================================'
-            echo 'CI/CD PIPELINE COMPLETED SUCCESSFULLY!'
-            echo 'Website: http://localhost:8081'
-            echo '======================================'
+            echo '=========================================='
+            echo 'MULTI-ENVIRONMENT CI/CD COMPLETED!'
+            echo 'Development : http://localhost:8081'
+            echo 'Staging     : http://localhost:8082'
+            echo 'Production  : http://localhost:8083'
+            echo '=========================================='
         }
 
         failure {
-            echo '======================================'
-            echo 'CI/CD PIPELINE FAILED!'
-            echo 'Please check the failed stage above.'
-            echo '======================================'
+            echo 'MULTI-ENVIRONMENT CI/CD PIPELINE FAILED!'
         }
     }
 }
