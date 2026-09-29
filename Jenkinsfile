@@ -45,6 +45,17 @@ pipeline {
             }
         }
 
+        stage('Docker Verification') {
+            steps {
+                echo 'Verifying Docker image...'
+
+                sh 'docker image inspect my-devops-website'
+                sh 'docker images my-devops-website'
+
+                echo 'Docker image verified successfully!'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying website container...'
@@ -55,6 +66,17 @@ pipeline {
                 sh 'docker run -d -p 8081:80 --name my-website my-devops-website'
 
                 echo 'Website deployed successfully!'
+            }
+        }
+
+        stage('Container Verification') {
+            steps {
+                echo 'Checking running container...'
+
+                sh 'docker ps --filter name=my-website'
+                sh 'docker inspect --format="{{.State.Status}}" my-website'
+
+                echo 'Container is running successfully!'
             }
         }
 
