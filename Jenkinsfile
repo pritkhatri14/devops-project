@@ -6,9 +6,12 @@ pipeline {
         stage('Validate') {
             steps {
                 echo 'Checking project files...'
+
                 sh 'test -f index.html'
                 sh 'test -f Dockerfile'
                 sh 'test -f Jenkinsfile'
+                sh 'test -f test-results/test-report.xml'
+
                 echo 'Validation completed successfully!'
             }
         }
@@ -16,15 +19,28 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running website tests...'
+
+                sh 'test -f index.html'
+                sh 'test -f Dockerfile'
+                sh 'test -f Jenkinsfile'
                 sh 'grep -q "DevOps" index.html'
-                echo 'Website test passed!'
+
+                echo 'All website tests passed!'
+            }
+
+            post {
+                always {
+                    junit 'test-results/test-report.xml'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
+
                 sh 'docker build -t my-devops-website .'
+
                 echo 'Docker image built successfully!'
             }
         }
@@ -32,9 +48,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying website container...'
+
                 sh 'docker stop my-website || true'
                 sh 'docker rm my-website || true'
+
                 sh 'docker run -d -p 8081:80 --name my-website my-devops-website'
+
                 echo 'Website deployed successfully!'
             }
         }
@@ -42,8 +61,10 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo 'Checking website health...'
+
                 sh 'sleep 3'
                 sh 'curl -f http://localhost:8081'
+
                 echo 'Health check passed!'
             }
         }
