@@ -90,6 +90,24 @@ pipeline {
                 echo 'Health check passed!'
             }
         }
+
+        stage('Pipeline Summary') {
+            steps {
+                echo ''
+                echo '=========================================='
+                echo '          DEPLOYMENT SUMMARY'
+                echo '=========================================='
+                echo 'Source       : GitHub'
+                echo 'Automation   : Jenkins'
+                echo 'Container    : Docker'
+                echo 'Environment  : Ubuntu'
+                echo 'Application  : My DevOps Website'
+                echo 'Port         : 8081'
+                echo 'Status       : DEPLOYED SUCCESSFULLY'
+                echo 'Health       : HEALTH CHECK PASSED'
+                echo '=========================================='
+            }
+        }
     }
 
     post {
@@ -101,7 +119,10 @@ pipeline {
         }
 
         failure {
+            echo '======================================'
             echo 'CI/CD PIPELINE FAILED!'
+            echo 'Please check the failed stage above.'
+            echo '======================================'
         }
     }
 }
