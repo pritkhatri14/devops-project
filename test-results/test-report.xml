@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Website Tests" tests="3" failures="0">
+    <testcase name="Index HTML exists"/>
+    <testcase name="Dockerfile exists"/>
+    <testcase name="Jenkinsfile exists"/>
+</testsuite>
