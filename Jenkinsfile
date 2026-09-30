@@ -12,6 +12,8 @@ pipeline {
                 sh 'test -f index.html'
                 sh 'test -f Dockerfile'
                 sh 'test -f Jenkinsfile'
+                sh 'test -f staging.html'
+                sh 'test -f production.html'
 
                 echo 'All required project files are present!'
             }
@@ -23,25 +25,14 @@ pipeline {
                 echo 'RUNNING AUTOMATED WEBSITE TESTS'
                 echo '======================================'
 
-                echo 'Test 1: Checking HTML file...'
                 sh 'test -s index.html'
-
-                echo 'Test 2: Checking HTML structure...'
                 sh 'grep -q "<html>" index.html'
                 sh 'grep -q "</html>" index.html'
-
-                echo 'Test 3: Checking website title...'
                 sh 'grep -q "<title>" index.html'
-
-                echo 'Test 4: Checking DevOps content...'
                 sh 'grep -q "DevOps" index.html'
-
-                echo 'Test 5: Checking website heading...'
                 sh 'grep -q "<h1>" index.html'
 
-                echo '======================================'
                 echo 'ALL AUTOMATED TESTS PASSED!'
-                echo '======================================'
             }
         }
 
@@ -66,6 +57,7 @@ pipeline {
 
                 sh 'docker stop my-website || true'
                 sh 'docker rm my-website || true'
+
                 sh 'docker run -d -p 8081:80 --name my-website my-devops-website'
 
                 echo 'Development environment deployed!'
@@ -94,9 +86,12 @@ pipeline {
 
                 sh 'docker stop my-website-staging || true'
                 sh 'docker rm my-website-staging || true'
+
                 sh 'docker run -d -p 8082:80 --name my-website-staging my-devops-website'
 
-                echo 'Staging environment deployed!'
+                sh 'docker cp staging.html my-website-staging:/usr/share/nginx/html/index.html'
+
+                echo 'Staging UI deployed!'
             }
         }
 
@@ -108,6 +103,7 @@ pipeline {
 
                 sh 'sleep 3'
                 sh 'curl -f http://localhost:8082'
+                sh 'curl -s http://localhost:8082 | grep -q "STAGING ENVIRONMENT"'
 
                 echo 'Staging health check passed!'
             }
@@ -122,9 +118,12 @@ pipeline {
 
                 sh 'docker stop my-website-production || true'
                 sh 'docker rm my-website-production || true'
+
                 sh 'docker run -d -p 8083:80 --name my-website-production my-devops-website'
 
-                echo 'Production environment deployed!'
+                sh 'docker cp production.html my-website-production:/usr/share/nginx/html/index.html'
+
+                echo 'Production UI deployed!'
             }
         }
 
@@ -136,6 +135,7 @@ pipeline {
 
                 sh 'sleep 3'
                 sh 'curl -f http://localhost:8083'
+                sh 'curl -s http://localhost:8083 | grep -q "PRODUCTION ENVIRONMENT"'
 
                 echo 'Production health check passed!'
             }
@@ -143,6 +143,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo '=========================================='
             echo 'MULTI-ENVIRONMENT CI/CD COMPLETED!'
