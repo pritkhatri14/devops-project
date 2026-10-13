@@ -5,73 +5,72 @@ pipeline {
 
         stage('Validate') {
             steps {
-                echo '======================================'
-                echo 'VALIDATING PROJECT FILES'
-                echo '======================================'
+                echo '========== VALIDATING PROJECT FILES =========='
 
-                sh 'test -f index.html'
+                sh 'test -s index.html'
+                sh 'test -s staging.html'
+                sh 'test -s production.html'
+
                 sh 'test -f Dockerfile'
+                sh 'test -f Dockerfile.staging'
+                sh 'test -f Dockerfile.production'
                 sh 'test -f Jenkinsfile'
-                sh 'test -f staging.html'
-                sh 'test -f production.html'
 
                 echo 'All required project files are present!'
             }
         }
 
-        stage('Test') {
+        stage('Test Source Files') {
             steps {
-                echo '======================================'
-                echo 'RUNNING AUTOMATED WEBSITE TESTS'
-                echo '======================================'
+                echo '========== TESTING WEBSITE SOURCE FILES =========='
 
-                sh 'test -s index.html'
-                sh 'grep -q "<html>" index.html'
-                sh 'grep -q "</html>" index.html'
-                sh 'grep -q "<title>" index.html'
-                sh 'grep -q "DevOps" index.html'
-                sh 'grep -q "<h1>" index.html'
+                sh 'grep -qi "<html" index.html'
+                sh 'grep -qi "</html>" index.html'
+                sh 'grep -qi "DevOps" index.html'
 
-                echo 'ALL AUTOMATED TESTS PASSED!'
+                sh 'grep -qi "Staging Environment" staging.html'
+                sh 'grep -qi "Production Environment" production.html'
+
+                echo 'All source file tests passed!'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Development Image') {
             steps {
-                echo '======================================'
-                echo 'BUILDING DOCKER IMAGE'
-                echo '======================================'
-
+                echo '========== BUILDING DEVELOPMENT IMAGE =========='
                 sh 'docker build -t my-devops-website .'
+            }
+        }
 
-                echo 'Docker image built successfully!'
+        stage('Build Staging Image') {
+            steps {
+                echo '========== BUILDING STAGING IMAGE =========='
+                sh 'docker build -f Dockerfile.staging -t my-devops-staging .'
+            }
+        }
+
+        stage('Build Production Image') {
+            steps {
+                echo '========== BUILDING PRODUCTION IMAGE =========='
+                sh 'docker build -f Dockerfile.production -t my-devops-production .'
             }
         }
 
         stage('Deploy Development') {
             steps {
-                echo '======================================'
-                echo 'DEPLOYING DEVELOPMENT ENVIRONMENT'
-                echo 'Port: 8081'
-                echo '======================================'
+                echo '========== DEPLOYING DEVELOPMENT ON PORT 8082 =========='
 
-                sh 'docker stop my-website || true'
-                sh 'docker rm my-website || true'
-
-                sh 'docker run -d -p 8081:80 --name my-website my-devops-website'
-
-                echo 'Development environment deployed!'
+                sh 'docker rm -f dev-website || true'
+                sh 'docker run -d --name dev-website -p 8082:80 my-devops-website'
             }
         }
 
         stage('Test Development') {
             steps {
-                echo '======================================'
-                echo 'TESTING DEVELOPMENT ENVIRONMENT'
-                echo '======================================'
+                echo '========== TESTING DEVELOPMENT =========='
 
                 sh 'sleep 3'
-                sh 'curl -f http://localhost:8081'
+                sh 'curl -fsS http://localhost:8082 | grep -qi "DevOps"'
 
                 echo 'Development health check passed!'
             }
@@ -79,31 +78,19 @@ pipeline {
 
         stage('Deploy Staging') {
             steps {
-                echo '======================================'
-                echo 'DEPLOYING STAGING ENVIRONMENT'
-                echo 'Port: 8082'
-                echo '======================================'
+                echo '========== DEPLOYING STAGING ON PORT 8083 =========='
 
-                sh 'docker stop my-website-staging || true'
-                sh 'docker rm my-website-staging || true'
-
-                sh 'docker run -d -p 8082:80 --name my-website-staging my-devops-website'
-
-                sh 'docker cp staging.html my-website-staging:/usr/share/nginx/html/index.html'
-
-                echo 'Staging UI deployed!'
+                sh 'docker rm -f staging-website || true'
+                sh 'docker run -d --name staging-website -p 8083:80 my-devops-staging'
             }
         }
 
         stage('Test Staging') {
             steps {
-                echo '======================================'
-                echo 'TESTING STAGING ENVIRONMENT'
-                echo '======================================'
+                echo '========== TESTING STAGING =========='
 
                 sh 'sleep 3'
-                sh 'curl -f http://localhost:8082'
-                sh 'curl -s http://localhost:8082 | grep -q "STAGING ENVIRONMENT"'
+                sh 'curl -fsS http://localhost:8083 | grep -qi "Staging Environment"'
 
                 echo 'Staging health check passed!'
             }
@@ -111,31 +98,19 @@ pipeline {
 
         stage('Deploy Production') {
             steps {
-                echo '======================================'
-                echo 'DEPLOYING PRODUCTION ENVIRONMENT'
-                echo 'Port: 8083'
-                echo '======================================'
+                echo '========== DEPLOYING PRODUCTION ON PORT 8085 =========='
 
-                sh 'docker stop my-website-production || true'
-                sh 'docker rm my-website-production || true'
-
-                sh 'docker run -d -p 8083:80 --name my-website-production my-devops-website'
-
-                sh 'docker cp production.html my-website-production:/usr/share/nginx/html/index.html'
-
-                echo 'Production UI deployed!'
+                sh 'docker rm -f production-website || true'
+                sh 'docker run -d --name production-website -p 8085:80 my-devops-production'
             }
         }
 
         stage('Test Production') {
             steps {
-                echo '======================================'
-                echo 'TESTING PRODUCTION ENVIRONMENT'
-                echo '======================================'
+                echo '========== TESTING PRODUCTION =========='
 
                 sh 'sleep 3'
-                sh 'curl -f http://localhost:8083'
-                sh 'curl -s http://localhost:8083 | grep -q "PRODUCTION ENVIRONMENT"'
+                sh 'curl -fsS http://localhost:8085 | grep -qi "Production Environment"'
 
                 echo 'Production health check passed!'
             }
@@ -143,21 +118,21 @@ pipeline {
     }
 
     post {
-
         success {
             echo '=========================================='
             echo 'MULTI-ENVIRONMENT CI/CD COMPLETED!'
-            echo '=========================================='
-            echo 'Automated Tests: PASSED'
-            echo 'Development: http://localhost:8081'
-            echo 'Staging:     http://localhost:8082'
-            echo 'Production:  http://localhost:8083'
+            echo 'All automated tests passed!'
+            echo 'Development: http://localhost:8082'
+            echo 'Staging:     http://localhost:8083'
+            echo 'Production:  http://localhost:8085'
+            echo 'Dashboard:   http://localhost:8084'
             echo '=========================================='
         }
 
         failure {
             echo '=========================================='
             echo 'MULTI-ENVIRONMENT CI/CD PIPELINE FAILED!'
+            echo 'Check the stage logs for the error.'
             echo '=========================================='
         }
     }

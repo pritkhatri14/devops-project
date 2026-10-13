@@ -1,60 +1,250 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Production Environment</title>
+    <title>DevOps Production Environment</title>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #07140c;
-            color: #ffffff;
-            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #07110b;
+            color: #e9f5ed;
         }
 
-        .header {
-            padding: 35px;
-            border-bottom: 1px solid #176b38;
+        header {
+            background: #0c1811;
+            border-bottom: 1px solid #1d5131;
+            padding: 22px 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        h1 {
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
             color: #42e878;
-            margin-bottom: 10px;
         }
 
         .status {
-            display: inline-block;
-            padding: 10px 25px;
+            background: #0d3420;
+            border: 1px solid #267342;
+            color: #65f394;
+            padding: 8px 18px;
             border-radius: 20px;
-            background: #0d4d29;
-            color: #6cff9b;
-            margin: 20px;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 45px 25px;
+        }
+
+        .hero {
+            margin-bottom: 35px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin: 0 0 10px;
+            color: #42e878;
+        }
+
+        .hero p {
+            color: #9caea3;
+            font-size: 17px;
+        }
+
+        .live {
+            display: inline-block;
+            margin-top: 10px;
+            color: #65f394;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
         .card {
-            margin: 30px auto;
+            background: #0c1811;
+            border: 1px solid #1e3527;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #42e878;
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .success {
+            color: #65f394;
+        }
+
+        .pipeline {
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .stage {
+            flex: 1;
+            text-align: center;
+            padding: 18px 10px;
+            background: #102117;
+            border: 1px solid #254732;
+            border-radius: 10px;
+        }
+
+        .stage span {
+            display: block;
+            margin-top: 8px;
+            color: #65f394;
+            font-size: 13px;
+        }
+
+        .arrow {
+            color: #42e878;
+            font-size: 22px;
+        }
+
+        .info {
+            margin-top: 25px;
+        }
+
+        .info p {
+            color: #a9b9ae;
+            margin: 10px 0;
+        }
+
+        footer {
+            text-align: center;
             padding: 30px;
-            max-width: 700px;
-            background: #0d2115;
-            border: 1px solid #176b38;
-            border-radius: 15px;
+            color: #617268;
+            border-top: 1px solid #1e3527;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline {
+                flex-direction: column;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="header">
-        <h1>PRODUCTION ENVIRONMENT</h1>
-        <div class="status">● SYSTEM ONLINE</div>
-        <p>Live Production Environment</p>
+<header>
+    <div class="logo">DEVOPS CONTROL • PRODUCTION</div>
+    <div class="status">● PRODUCTION ONLINE</div>
+</header>
+
+<div class="container">
+
+    <div class="hero">
+        <h1>Production Environment</h1>
+        <p>Live environment deployed through the automated CI/CD pipeline.</p>
+        <div class="live">● LIVE APPLICATION</div>
     </div>
 
-    <div class="card">
-        <h2>CI/CD Pipeline</h2>
-        <p>Environment: PRODUCTION</p>
-        <p>Port: 8083</p>
-        <p>Docker Container: my-website-production</p>
-        <p>Health Check: PASSED</p>
+    <div class="grid">
+
+        <div class="card">
+            <h3>Environment</h3>
+            <div class="value">PRODUCTION</div>
+            <p>Port: 8083</p>
+            <p>Container: my-website-production</p>
+        </div>
+
+        <div class="card">
+            <h3>Deployment</h3>
+            <div class="value success">ACTIVE</div>
+            <p>Docker deployment successful</p>
+            <p>Application is live</p>
+        </div>
+
+        <div class="card">
+            <h3>Health Check</h3>
+            <div class="value success">HEALTHY</div>
+            <p>HTTP response: 200 OK</p>
+            <p>Service is responding</p>
+        </div>
+
     </div>
+
+    <div class="card info">
+        <h3>CI/CD Pipeline</h3>
+
+        <div class="pipeline">
+
+            <div class="stage">
+                Validate
+                <span>✓ PASSED</span>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="stage">
+                Test
+                <span>✓ PASSED</span>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="stage">
+                Docker Build
+                <span>✓ PASSED</span>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="stage">
+                Production
+                <span>✓ ACTIVE</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card info">
+        <h3>Production Infrastructure</h3>
+
+        <p>Operating System: Ubuntu</p>
+        <p>Container Platform: Docker</p>
+        <p>Web Server: Nginx</p>
+        <p>Environment Port: 8083</p>
+        <p>Deployment Status: Successful</p>
+    </div>
+
+</div>
+
+<footer>
+    Multi-Environment DevOps CI/CD Project • Production Environment
+</footer>
 
 </body>
-</html>

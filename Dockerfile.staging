@@ -1,0 +1,3 @@
+FROM nginx:alpine
+COPY staging.html /usr/share/nginx/html/index.html
+EXPOSE 80
