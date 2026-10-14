@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staging Environment | DevOps</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top right, #3b2a0a 0%, transparent 35%),
+                radial-gradient(circle at bottom left, #111827 0%, transparent 40%),
+                #070b12;
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: rgba(15, 23, 42, 0.92);
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .top-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #22c55e;
+            font-size: 14px;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #22c55e;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: auto;
+            padding: 55px 30px 35px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border: 1px solid #92400e;
+            background: rgba(120, 53, 15, 0.25);
+            border-radius: 30px;
+            color: #fbbf24;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(34px, 6vw, 60px);
+            line-height: 1;
+            color: #f9fafb;
+        }
+
+        .hero h1 span {
+            color: #f59e0b;
+        }
+
+        .hero p {
+            max-width: 700px;
+            color: #9ca3af;
+            font-size: 17px;
+            line-height: 1.7;
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 30px 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: rgba(17, 24, 39, 0.88);
+            border: 1px solid #273449;
+            border-radius: 16px;
+            padding: 23px;
+            transition: 0.25s;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.22);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #f59e0b;
+        }
+
+        .card-label {
+            color: #9ca3af;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .green {
+            color: #22c55e;
+        }
+
+        .orange {
+            color: #f59e0b;
+        }
+
+        .blue {
+            color: #60a5fa;
+        }
+
+        .section {
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid #273449;
+            border-radius: 18px;
+            padding: 28px;
+            margin-top: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .stage {
+            background: #111827;
+            border: 1px solid #293548;
+            border-radius: 12px;
+            padding: 17px 10px;
+            text-align: center;
+        }
+
+        .stage-icon {
+            font-size: 23px;
+        }
+
+        .stage-name {
+            margin-top: 9px;
+            font-size: 13px;
+        }
+
+        .stage-status {
+            color: #22c55e;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        .access {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 13px;
+        }
+
+        .access a {
+            text-decoration: none;
+            color: #e5e7eb;
+            background: #111827;
+            border: 1px solid #293548;
+            border-radius: 12px;
+            padding: 17px;
+            transition: 0.2s;
+        }
+
+        .access a:hover {
+            border-color: #f59e0b;
+            background: #172033;
+            transform: translateY(-2px);
+        }
+
+        .access-title {
+            font-weight: bold;
+        }
+
+        .access-port {
+            color: #60a5fa;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+            border-top: 1px solid #1f2937;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .hero,
+            .container {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+
+        <div class="brand">
+            ⚙️ DEVOPS / STAGING
+        </div>
+
+        <div class="top-status">
+            <div class="dot"></div>
+            SYSTEM ONLINE
+        </div>
+
+    </div>
+
+
+    <div class="hero">
+
+        <div class="badge">
+            PRE-PRODUCTION ENVIRONMENT
+        </div>
+
+        <h1>
+            Staging <span>Environment</span>
+        </h1>
+
+        <p>
+            A controlled environment used to validate the application
+            before it reaches production through the CI/CD pipeline.
+        </p>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="grid">
+
+            <div class="card">
+                <div class="card-label">Environment</div>
+                <div class="card-value orange">STAGING</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Status</div>
+                <div class="card-value green">● ONLINE</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Port</div>
+                <div class="card-value blue">8082</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Container</div>
+                <div class="card-value">my-website-staging</div>
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-title">
+                <h2>🔄 Deployment Pipeline</h2>
+                <span class="green">● READY</span>
+            </div>
+
+            <div class="pipeline">
+
+                <div class="stage">
+                    <div class="stage-icon">✓</div>
+                    <div class="stage-name">Validate</div>
+                    <div class="stage-status">PASSED</div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">✓</div>
+                    <div class="stage-name">Tests</div>
+                    <div class="stage-status">PASSED</div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">✓</div>
+                    <div class="stage-name">Docker Build</div>
+                    <div class="stage-status">PASSED</div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">✓</div>
+                    <div class="stage-name">Deploy</div>
+                    <div class="stage-status">PASSED</div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">✓</div>
+                    <div class="stage-name">Health Check</div>
+                    <div class="stage-status">PASSED</div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-title">
+                <h2>🌐 Environment Access</h2>
+                <span class="orange">LOCAL</span>
+            </div>
+
+            <div class="access">
+
+                <a href="http://localhost:8081">
+                    <div class="access-title">🌐 Website</div>
+                    <div class="access-port">localhost:8081</div>
+                </a>
+
+                <a href="http://localhost:8082">
+                    <div class="access-title">🧪 Staging</div>
+                    <div class="access-port">localhost:8082</div>
+                </a>
+
+                <a href="http://localhost:8083">
+                    <div class="access-title">🚀 Production</div>
+                    <div class="access-port">localhost:8083</div>
+                </a>
+
+                <a href="http://localhost:8084">
+                    <div class="access-title">📊 DevOps Dashboard</div>
+                    <div class="access-port">localhost:8084</div>
+                </a>
+
+                <a href="http://localhost:8090">
+                    <div class="access-title">🎛️ Control Center</div>
+                    <div class="access-port">localhost:8090</div>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        DevOps Project • Docker • Jenkins • GitHub • Ubuntu
+        <br>
+        Staging Environment • Port 8082
+    </div>
+
+</body>
+</html>

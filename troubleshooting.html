@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Troubleshooting Center</title>
+
+<style>
+:root {
+    --bg: #0b1120;
+    --panel: #141e30;
+    --border: #27354b;
+    --text: #e8eef8;
+    --muted: #94a3b8;
+    --cyan: #38bdf8;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+header {
+    padding: 28px 5%;
+    background: #10192a;
+    border-bottom: 1px solid var(--border);
+}
+.brand {
+    color: var(--cyan);
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+h1 { margin: 12px 0; font-size: 30px; }
+.subtitle { color: var(--muted); font-size: 14px; line-height: 1.6; }
+main { max-width: 1200px; margin: auto; padding: 28px 20px; }
+.notice {
+    padding: 15px;
+    margin-bottom: 22px;
+    border: 1px solid #075985;
+    border-radius: 9px;
+    background: #10263a;
+    color: #bae6fd;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+input, select {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--panel);
+    color: var(--text);
+    font-size: 14px;
+}
+input { flex: 1; min-width: 200px; }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+}
+.category {
+    color: var(--cyan);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+h2 { font-size: 19px; margin: 12px 0; }
+p, li { color: #c4cede; font-size: 14px; line-height: 1.7; }
+h3 { font-size: 14px; margin-top: 20px; }
+code {
+    display: block;
+    padding: 12px;
+    margin: 9px 0;
+    border-radius: 7px;
+    background: #080d18;
+    color: var(--green);
+    font-size: 13px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+button {
+    padding: 9px 12px;
+    border: 1px solid #075985;
+    border-radius: 7px;
+    background: #075985;
+    color: white;
+    cursor: pointer;
+}
+button:hover { opacity: .85; }
+.solution {
+    display: none;
+    border-top: 1px solid var(--border);
+    margin-top: 15px;
+    padding-top: 8px;
+}
+.solution.show { display: block; }
+.empty {
+    display: none;
+    color: var(--muted);
+    text-align: center;
+    padding: 25px;
+}
+footer {
+    padding: 25px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+}
+@media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    h1 { font-size: 24px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+    <div class="brand">DEVOPS PROJECT / SUPPORT</div>
+    <h1>🛠 Troubleshooting Center</h1>
+    <div class="subtitle">
+        Identify common DevOps problems, understand their causes,
+        and follow practical steps to investigate them.
+    </div>
+</header>
+
+<main>
+    <div class="notice">
+        <strong>Before troubleshooting:</strong>
+        These are general guides, not automatic diagnoses of your computer.
+        Read each command before running it. Commands such as stopping or
+        deleting containers can interrupt services, so investigate first.
+    </div>
+
+    <h2>Find a Solution</h2>
+    <div class="toolbar">
+        <input id="search" type="search"
+               placeholder="Search errors, commands or solutions...">
+        <select id="category">
+            <option value="all">All categories</option>
+            <option value="Jenkins">Jenkins</option>
+            <option value="Docker">Docker</option>
+            <option value="Linux">Linux</option>
+            <option value="Website">Website</option>
+        </select>
+    </div>
+
+    <div class="grid" id="guides">
+
+        <article class="card" data-category="Jenkins">
+            <div class="category">JENKINS</div>
+            <h2>01. Jenkins Pipeline Failed</h2>
+            <p><strong>Possible cause:</strong> A test failed, a file is missing,
+            or a pipeline command returned an error.</p>
+            <h3>First investigation command</h3>
+            <code>sudo systemctl status jenkins</code>
+            <button class="toggle">View troubleshooting steps</button>
+            <div class="solution">
+                <h3>Steps to investigate</h3>
+                <ol>
+                    <li>Open Jenkins at <strong>http://localhost:8080/</strong>.</li>
+                    <li>Open the <strong>devops-project</strong> job.</li>
+                    <li>Open the failed build and select Console Output.</li>
+                    <li>Find the first meaningful error in the log.</li>
+                    <li>Correct the cause, then run the build again.</li>
+                </ol>
+                <p><strong>Remember:</strong> The console log helps identify
+                which pipeline stage failed.</p>
+            </div>
+        </article>
+
+        <article class="card" data-category="Docker">
+            <div class="category">DOCKER</div>
+            <h2>02. Container Is Not Running</h2>
+            <p><strong>Possible cause:</strong> The application exited or the
+            container encountered a startup error.</p>
+            <h3>First investigation command</h3>
+            <code>docker ps -a</code>
+            <button class="toggle">View troubleshooting steps</button>
+            <div class="solution">
+                <h3>Steps to investigate</h3>
+                <ol>
+                    <li>Find the container name in the command output.</li>
+                    <li>Check whether its status is Exited.</li>
+                    <li>Inspect its recent logs.</li>
+                    <li>Check the image and port configuration.</li>
+                </ol>
+                <code>docker logs --tail 50 CONTAINER_NAME</code>
+                <p>Replace <strong>CONTAINER_NAME</strong> with the actual
+                container name. Logs can reveal why the application stopped.</p>
+            </div>
+        </article>
+
+        <article class="card" data-category="Website">
+            <div class="category">WEBSITE / HTTP</div>
+            <h2>03. Website Shows Unable to Connect</h2>
+            <p><strong>Possible cause:</strong> The container is stopped,
+            the port mapping is wrong, or the service is unavailable.</p>
+            <h3>First investigation command</h3>
+            <code>curl -I --max-time 3 http://localhost:8085</code>
+            <button class="toggle">View troubleshooting steps</button>
+            <div class="solution">
+                <h3>Steps to investigate</h3>
+                <ol>
+                    <li>Check whether the expected container is running.</li>
+                    <li>Verify the host-to-container port mapping.</li>
+                    <li>Check whether another process is using the port.</li>
+                    <li>Inspect the container logs if the problem continues.</li>
+                </ol>
+                <code>docker ps</code>
+                <code>sudo ss -ltnp | grep ':8085'</code>
+                <p>A successful HTTP response such as 200 indicates that
+                the web server responded to the request.</p>
+            </div>
+        </article>
+
+        <article class="card" data-category="Docker">
+            <div class="category">DOCKER</div>
+            <h2>04. Docker Permission Denied</h2>
+            <p><strong>Possible cause:</strong> The current user does not
+            have permission to access the Docker socket.</p>
+            <h3>First investigation command</h3>
+            <code>docker ps</code>
+            <button class="toggle">View troubleshooting steps</button>
+            <div class="solution">
+                <h3>Steps to investigate</h3>
+                <ol>
+                    <li>Read the complete permission error.</li>
+                    <li>Check whether the Docker service is running.</li>
+                    <li>Check the user's Docker access permissions.</li>
+                    <li>Follow your system administrator's approved
+                    permission setup.</li>
+                </ol>
+                <code>sudo systemctl status docker</code>
+                <p>Do not change socket permissions to 777. Docker access
+                can grant powerful control over the host computer.</p>
+            </div>
+        </article>
+
+        <article class="card" data-category="Linux">
+            <div class="category">LINUX</div>
+            <h2>05. Disk Space Is Low</h2>
+            <p><strong>Possible cause:</strong> Logs, downloaded files,
+            Docker images, or other files are consuming disk space.</p>
+            <h3>First investigation command</h3>
+            <code>df -h</code>
+            <button class="toggle">View troubleshooting steps</button>
+            <div class="solution">
+                <h3>Steps to investigate</h3>
+                <ol>
+                    <li>Check the Use% column in the output.</li>
+                    <li>Identify which filesystem is nearly full.</li>
+                    <li>Inspect Docker disk usage if relevant.</li>
+                    <li>Review files before deciding what can be removed.</li>
+                </ol>
+                <code>docker system df</code>
+                <p>Avoid pruning Docker resources until you understand
+                which images, containers, and volumes your project needs.</p>
+            </div>
+        </article>
+
+        <article class="card" data-category="Website">
+            <div class="category">WEBSITE / HTTP</div>
+            <h2>06. HTTP 404 Not Found</h2>
+            <p><strong>Possible cause:</strong> The requested page or
+            resource does not exist at that URL.</p>
+            <h3>First investigation command</h3>
+            <code>curl -I http://localhost:8085/</code>
+            <button class="toggle">View troubleshooting steps</button>
+            <div class="solution">
+                <h3>Steps to investigate</h3>
+                <ol>
+                    <li>Check the URL and requested file path.</li>
+                    <li>Confirm the HTML file exists.</li>
+                    <li>Verify that the file is mounted into the expected
+                    Nginx directory.</li>
+                    <li>Check the web server logs for further details.</li>
+                </ol>
+                <code>docker logs --tail 50 devops-error-center</code>
+                <p>HTTP 404 means the server could not find the requested
+                resource. It does not necessarily mean the server is down.</p>
+            </div>
+        </article>
+
+    </div>
+
+    <div class="empty" id="empty">No matching guides found.</div>
+</main>
+
+<footer>DevOps Troubleshooting Center · Ubuntu · Docker · Jenkins</footer>
+
+<script>
+const search = document.getElementById("search");
+const category = document.getElementById("category");
+const cards = [...document.querySelectorAll(".card")];
+
+function filterGuides() {
+    const query = search.value.toLowerCase();
+    const selected = category.value;
+    let visible = 0;
+
+    cards.forEach(card => {
+        const matchesText = card.innerText.toLowerCase().includes(query);
+        const matchesCategory =
+            selected === "all" || card.dataset.category === selected;
+        const show = matchesText && matchesCategory;
+
+        card.style.display = show ? "" : "none";
+        if (show) visible++;
+    });
+
+    document.getElementById("empty").style.display =
+        visible === 0 ? "block" : "none";
+}
+
+document.querySelectorAll(".toggle").forEach(button => {
+    button.addEventListener("click", () => {
+        const solution = button.nextElementSibling;
+        const isOpen = solution.classList.toggle("show");
+        button.textContent = isOpen
+            ? "Hide troubleshooting steps"
+            : "View troubleshooting steps";
+    });
+});
+
+search.addEventListener("input", filterGuides);
+category.addEventListener("change", filterGuides);
+</script>
+</body>
+</html>

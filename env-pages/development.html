@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>DevOps Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b1120;
+            color: #e5e7eb;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        header {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #94a3b8;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .status {
+            background: #172033;
+            border: 1px solid #2d3b52;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .online {
+            color: #4ade80;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 15px;
+            padding: 22px;
+        }
+
+        .card h2 {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 11px 0;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #94a3b8;
+        }
+
+        .value {
+            font-weight: bold;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .warning {
+            color: #facc15;
+        }
+
+        .error {
+            color: #f87171;
+        }
+
+        .pipeline {
+            margin-top: 25px;
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .pipeline h2 {
+            margin-bottom: 20px;
+        }
+
+        .pipeline-list {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+        }
+
+        .stage {
+            background: #172033;
+            border: 1px solid #29405b;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stage .check {
+            font-size: 22px;
+            color: #4ade80;
+            margin-bottom: 8px;
+        }
+
+        .environment {
+            margin-top: 25px;
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .environment-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 18px;
+        }
+
+        .env {
+            background: #172033;
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid #2d3b52;
+        }
+
+        .env h3 {
+            margin-bottom: 8px;
+        }
+
+        .env a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .live {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            background: #4ade80;
+            border-radius: 50%;
+            margin-right: 7px;
+        }
+
+        .commit {
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .dashboard-info {
+            margin-top: 20px;
+            background: #172033;
+            border: 1px solid #2d3b52;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <h1>⚙️ DevOps Dashboard</h1>
+
+        <p>
+            Technical monitoring for Website • Staging • Production
+        </p>
+
+        <div class="status-bar">
+
+            <div class="status">
+                <span class="live"></span>
+                Dashboard Online
+            </div>
+
+            <div class="status">
+                Dashboard Port: 8084
+            </div>
+
+            <div class="status">
+                Auto Refresh: 5 seconds
+            </div>
+
+        </div>
+
+        <div class="dashboard-info">
+
+            <strong>Dashboard:</strong>
+
+            http://localhost:8084
+
+            <br><br>
+
+            <strong>Website:</strong>
+
+            http://localhost:8081
+
+        </div>
+
+    </header>
+
+
+
+    <!-- MAIN INFORMATION -->
+
+    <div class="grid">
+
+
+        <!-- GIT -->
+
+        <div class="card">
+
+            <h2>🌿 Git Information</h2>
+
+            <div class="row">
+
+                <span class="label">
+                    Local Branch
+                </span>
+
+                <span class="value"
+                      id="branch">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Jenkins Branch
+                </span>
+
+                <span class="value">
+                    main
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Latest Commit
+                </span>
+
+                <span class="value commit"
+                      id="commit">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Commit Message
+                </span>
+
+                <span class="value"
+                      id="commitMessage">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- DOCKER -->
+
+        <div class="card">
+
+            <h2>🐳 Docker</h2>
+
+            <div class="row">
+
+                <span class="label">
+                    Container
+                </span>
+
+                <span class="value success"
+                      id="docker">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Container Name
+                </span>
+
+                <span class="value">
+                    my-website
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Website Port
+                </span>
+
+                <span class="value"
+                      id="port">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Docker Image
+                </span>
+
+                <span class="value">
+                    my-devops-website
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HEALTH -->
+
+        <div class="card">
+
+            <h2>❤️ Website Health</h2>
+
+            <div class="row">
+
+                <span class="label">
+                    Status
+                </span>
+
+                <span class="value success"
+                      id="health">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Website
+                </span>
+
+                <span class="value">
+                    localhost:8081
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    HTTP Status
+                </span>
+
+                <span class="value success">
+                    200 OK
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- JENKINS -->
+
+        <div class="card">
+
+            <h2>🤖 Jenkins CI/CD</h2>
+
+            <div class="row">
+
+                <span class="label">
+                    Build Status
+                </span>
+
+                <span class="value success"
+                      id="jenkinsStatus">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Build Number
+                </span>
+
+                <span class="value"
+                      id="jenkinsBuild">
+
+                    Loading...
+
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Source
+                </span>
+
+                <span class="value">
+                    GitHub → Jenkins
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Jenkins Server
+                </span>
+
+                <span class="value">
+                    localhost:8080
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TESTS -->
+
+        <div class="card">
+
+            <h2>🧪 Automated Tests</h2>
+
+            <div class="row">
+
+                <span class="label">
+                    HTML Validation
+                </span>
+
+                <span class="value success">
+                    ✓ Passed
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    HTML Structure
+                </span>
+
+                <span class="value success">
+                    ✓ Passed
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    DevOps Content
+                </span>
+
+                <span class="value success">
+                    ✓ Passed
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Website Test
+                </span>
+
+                <span class="value success">
+                    ✓ Passed
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- DOCKER IMAGE -->
+
+        <div class="card">
+
+            <h2>📦 Docker Image</h2>
+
+            <div class="row">
+
+                <span class="label">
+                    Image
+                </span>
+
+                <span class="value">
+                    my-devops-website
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Base Image
+                </span>
+
+                <span class="value">
+                    nginx:alpine
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Runtime
+                </span>
+
+                <span class="value">
+                    Docker
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Deployment
+                </span>
+
+                <span class="value success">
+                    Active
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- PIPELINE -->
+
+    <div class="pipeline">
+
+        <h2>🔄 Recent CI/CD Pipeline</h2>
+
+        <div class="pipeline-list">
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Validate
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Automated Tests
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Build Docker Image
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Deploy Website
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Test Website
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Deploy Staging
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Test Staging
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Deploy Production
+            </div>
+
+            <div class="stage">
+                <div class="check">✓</div>
+                Test Production
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ENVIRONMENT ACCESS -->
+
+    <div class="environment">
+
+        <h2>🌐 Environment Access</h2>
+
+        <div class="environment-grid">
+
+
+            <div class="env">
+
+                <h3>🌐 Website</h3>
+
+                <p>
+                    Main application
+                </p>
+
+                <br>
+
+                <p>
+                    <a href="http://localhost:8081"
+                       target="_blank">
+
+                        http://localhost:8081
+
+                    </a>
+                </p>
+
+            </div>
+
+
+
+            <div class="env">
+
+                <h3>🧪 Staging</h3>
+
+                <p>
+                    Release testing environment
+                </p>
+
+                <br>
+
+                <p>
+                    <a href="http://localhost:8082"
+                       target="_blank">
+
+                        http://localhost:8082
+
+                    </a>
+                </p>
+
+            </div>
+
+
+
+            <div class="env">
+
+                <h3>🚀 Production</h3>
+
+                <p>
+                    Production environment
+                </p>
+
+                <br>
+
+                <p>
+                    <a href="http://localhost:8083"
+                       target="_blank">
+
+                        http://localhost:8083
+
+                    </a>
+                </p>
+
+            </div>
+
+
+
+            <div class="env">
+
+                <h3>📊 DevOps Dashboard</h3>
+
+                <p>
+                    Technical monitoring
+                </p>
+
+                <br>
+
+                <p>
+                    <a href="http://localhost:8084"
+                       target="_blank">
+
+                        http://localhost:8084
+
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <footer>
+
+        DevOps Project • Ubuntu VM • GitHub • Jenkins • Docker
+
+        <br><br>
+
+        Live system information refreshes automatically every 5 seconds.
+
+    </footer>
+
+
+</div>
+
+
+
+<script>
+
+
+async function loadStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://localhost:5000/api/status"
+            );
+
+        const data =
+            await response.json();
+
+
+
+        /* GIT */
+
+        document.getElementById(
+            "branch"
+        ).textContent =
+            data.branch;
+
+
+        document.getElementById(
+            "commit"
+        ).textContent =
+            data.jenkins_commit;
+
+
+        document.getElementById(
+            "commitMessage"
+        ).textContent =
+            data.jenkins_message;
+
+
+
+        /* DOCKER */
+
+        document.getElementById(
+            "docker"
+        ).textContent =
+            data.docker_status;
+
+
+        document.getElementById(
+            "port"
+        ).textContent =
+            data.docker_port;
+
+
+
+        /* HEALTH */
+
+        document.getElementById(
+            "health"
+        ).textContent =
+            data.health;
+
+
+
+        /* JENKINS */
+
+        document.getElementById(
+            "jenkinsStatus"
+        ).textContent =
+            data.jenkins_status;
+
+
+        document.getElementById(
+            "jenkinsBuild"
+        ).textContent =
+            data.jenkins_build;
+
+
+    }
+
+    catch (error) {
+
+        document.getElementById(
+            "branch"
+        ).textContent =
+            "API Offline";
+
+
+        document.getElementById(
+            "commit"
+        ).textContent =
+            "Unavailable";
+
+
+        document.getElementById(
+            "commitMessage"
+        ).textContent =
+            "Unavailable";
+
+
+        document.getElementById(
+            "docker"
+        ).textContent =
+            "Unknown";
+
+
+        document.getElementById(
+            "port"
+        ).textContent =
+            "Unknown";
+
+
+        document.getElementById(
+            "health"
+        ).textContent =
+            "Unknown";
+
+
+        document.getElementById(
+            "jenkinsStatus"
+        ).textContent =
+            "Unknown";
+
+
+        document.getElementById(
+            "jenkinsBuild"
+        ).textContent =
+            "Unknown";
+
+    }
+
+}
+
+
+loadStatus();
+
+
+setInterval(
+    loadStatus,
+    5000
+);
+
+
+</script>
+
+
+</body>
+
+</html>

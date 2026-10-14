@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Deployment History</title>
+<style>
+:root {
+    --bg: #0b1120;
+    --panel: #141e30;
+    --border: #27354b;
+    --text: #e8eef8;
+    --muted: #94a3b8;
+    --cyan: #38bdf8;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+header {
+    padding: 28px 5%;
+    background: #10192a;
+    border-bottom: 1px solid var(--border);
+}
+.brand { color: var(--cyan); font-size: 12px; letter-spacing: 2px; }
+h1 { margin: 12px 0; font-size: 30px; }
+.subtitle { color: var(--muted); font-size: 14px; line-height: 1.6; }
+main { max-width: 1200px; margin: auto; padding: 28px 20px; }
+.notice {
+    padding: 14px;
+    margin-bottom: 22px;
+    background: #10263a;
+    border: 1px solid #075985;
+    border-radius: 9px;
+    color: #bae6fd;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.card, .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+}
+.label { color: var(--muted); font-size: 13px; }
+.number { margin-top: 12px; font-size: 30px; font-weight: bold; }
+.cyan { color: var(--cyan); }
+.green { color: var(--green); }
+.red { color: var(--red); }
+.yellow { color: var(--yellow); }
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+input, select, button {
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: #0b1120;
+    color: var(--text);
+    font-size: 13px;
+}
+input { flex: 1; min-width: 180px; }
+button { background: #075985; cursor: pointer; }
+button:hover { opacity: .85; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 720px; }
+th, td {
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+th { color: var(--muted); font-weight: normal; }
+td { line-height: 1.5; }
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: bold;
+}
+.success { background: #14532d; color: #bbf7d0; }
+.failed { background: #7f1d1d; color: #fecaca; }
+.running { background: #713f12; color: #fde68a; }
+.empty { text-align: center; color: var(--muted); padding: 25px; }
+footer { text-align: center; padding: 25px; color: var(--muted); font-size: 12px; }
+@media(max-width: 750px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="brand">DEVOPS PROJECT / CI-CD</div>
+    <h1>🚀 Deployment History</h1>
+    <div class="subtitle">Review deployment records across Development, Staging and Production.</div>
+</header>
+
+<main>
+    <div class="notice">
+        <strong>Demo mode:</strong> These are example deployment records for
+        demonstrating the interface. They are not live Jenkins build records yet.
+    </div>
+
+    <section class="cards">
+        <div class="card">
+            <div class="label">Total Deployments</div>
+            <div class="number cyan" id="total">5</div>
+        </div>
+        <div class="card">
+            <div class="label">Successful</div>
+            <div class="number green" id="successCount">3</div>
+        </div>
+        <div class="card">
+            <div class="label">Failed</div>
+            <div class="number red" id="failedCount">1</div>
+        </div>
+        <div class="card">
+            <div class="label">In Progress</div>
+            <div class="number yellow" id="runningCount">1</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Deployment Records</h2>
+        <div class="toolbar">
+            <input id="search" type="search" placeholder="Search ID, environment or details...">
+            <select id="environment">
+                <option value="all">All environments</option>
+                <option value="Development">Development</option>
+                <option value="Staging">Staging</option>
+                <option value="Production">Production</option>
+            </select>
+            <select id="status">
+                <option value="all">All statuses</option>
+                <option value="Success">Success</option>
+                <option value="Failed">Failed</option>
+                <option value="Running">Running</option>
+            </select>
+            <button id="addRecord">+ Add Demo Record</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>DEPLOYMENT ID</th>
+                        <th>ENVIRONMENT</th>
+                        <th>STATUS</th>
+                        <th>DETAILS</th>
+                        <th>TIME</th>
+                    </tr>
+                </thead>
+                <tbody id="records"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>DevOps Deployment History · Ubuntu · Docker · Jenkins</footer>
+
+<script>
+const deployments = [
+    {id:"DEP-005", environment:"Production", status:"Success", details:"Production website deployed", time:"Demo record"},
+    {id:"DEP-004", environment:"Staging", status:"Success", details:"Staging website deployed", time:"Demo record"},
+    {id:"DEP-003", environment:"Development", status:"Success", details:"Development website deployed", time:"Demo record"},
+    {id:"DEP-002", environment:"Production", status:"Failed", details:"Example failed deployment", time:"Demo record"},
+    {id:"DEP-001", environment:"Staging", status:"Running", details:"Example deployment in progress", time:"Demo record"}
+];
+
+const records = document.getElementById("records");
+const search = document.getElementById("search");
+const environment = document.getElementById("environment");
+const status = document.getElementById("status");
+
+function render() {
+    const query = search.value.toLowerCase();
+
+    const filtered = deployments.filter(item => {
+        const text = Object.values(item).join(" ").toLowerCase();
+        return text.includes(query) &&
+            (environment.value === "all" || item.environment === environment.value) &&
+            (status.value === "all" || item.status === status.value);
+    });
+
+    document.getElementById("total").textContent = deployments.length;
+    document.getElementById("successCount").textContent =
+        deployments.filter(x => x.status === "Success").length;
+    document.getElementById("failedCount").textContent =
+        deployments.filter(x => x.status === "Failed").length;
+    document.getElementById("runningCount").textContent =
+        deployments.filter(x => x.status === "Running").length;
+
+    if (!filtered.length) {
+        records.innerHTML = '<tr><td colspan="5" class="empty">No matching records found.</td></tr>';
+        return;
+    }
+
+    records.innerHTML = filtered.map(item => {
+        const className = item.status.toLowerCase();
+        return `<tr>
+            <td><strong>${item.id}</strong></td>
+            <td>${item.environment}</td>
+            <td><span class="badge ${className}">${item.status}</span></td>
+            <td>${item.details}</td>
+            <td>${item.time}</td>
+        </tr>`;
+    }).join("");
+}
+
+document.getElementById("addRecord").addEventListener("click", () => {
+    const next = deployments.length + 1;
+    deployments.unshift({
+        id: "DEP-" + String(next).padStart(3, "0"),
+        environment: "Development",
+        status: "Success",
+        details: "Demo record added using the page",
+        time: new Date().toLocaleString()
+    });
+    render();
+});
+
+search.addEventListener("input", render);
+environment.addEventListener("change", render);
+status.addEventListener("change", render);
+render();
+</script>
+</body>
+</html>

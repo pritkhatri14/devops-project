@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DevOps Central Control Center</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at 10% 0%, #18234a 0%, transparent 30%),
+                radial-gradient(circle at 90% 10%, #2b1747 0%, transparent 30%),
+                #060912;
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 72px;
+            background: rgba(9, 14, 27, 0.94);
+            border-bottom: 1px solid #293449;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(14px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 20px;
+            color: #a5b4fc;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e1b4b;
+            border: 1px solid #4338ca;
+            border-radius: 10px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #22c55e;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #22c55e;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: auto;
+            padding: 35px 30px 55px;
+        }
+
+        .hero {
+            padding: 25px 0 35px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            color: #a5b4fc;
+            border: 1px solid #3730a3;
+            background: rgba(49, 46, 129, 0.2);
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(34px, 5vw, 58px);
+            line-height: 1;
+            color: #f8fafc;
+        }
+
+        .hero h1 span {
+            color: #818cf8;
+        }
+
+        .hero p {
+            max-width: 760px;
+            color: #9ca3af;
+            line-height: 1.7;
+            font-size: 16px;
+            margin-top: 18px;
+        }
+
+        .overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 28px;
+        }
+
+        .overview-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #293449;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .overview-label {
+            color: #6b7280;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .overview-value {
+            margin-top: 9px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .green {
+            color: #22c55e;
+        }
+
+        .blue {
+            color: #60a5fa;
+        }
+
+        .purple {
+            color: #a78bfa;
+        }
+
+        .orange {
+            color: #f59e0b;
+        }
+
+        .section {
+            background: rgba(10, 16, 30, 0.9);
+            border: 1px solid #293449;
+            border-radius: 18px;
+            padding: 27px;
+            margin-top: 22px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 23px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .section-tag {
+            font-size: 11px;
+            color: #9ca3af;
+            border: 1px solid #374151;
+            padding: 6px 10px;
+            border-radius: 20px;
+        }
+
+        .environment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .environment {
+            position: relative;
+            overflow: hidden;
+            background: #111827;
+            border: 1px solid #293449;
+            border-radius: 15px;
+            padding: 22px;
+            transition: 0.25s;
+        }
+
+        .environment:hover {
+            transform: translateY(-4px);
+            border-color: #6366f1;
+        }
+
+        .environment::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #6366f1;
+        }
+
+        .environment h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .environment-status {
+            margin-top: 15px;
+            color: #22c55e;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .environment-port {
+            color: #60a5fa;
+            margin-top: 9px;
+            font-size: 13px;
+        }
+
+        .environment-description {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 13px 0;
+        }
+
+        .open-btn {
+            display: inline-block;
+            padding: 9px 13px;
+            border-radius: 8px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e5e7eb;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .open-btn:hover {
+            border-color: #818cf8;
+        }
+
+        .pipeline {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .pipeline-stage {
+            min-width: 145px;
+            flex: 1;
+            background: #111827;
+            border: 1px solid #293449;
+            border-radius: 12px;
+            padding: 18px 12px;
+            text-align: center;
+        }
+
+        .pipeline-stage .icon {
+            font-size: 23px;
+            color: #22c55e;
+        }
+
+        .pipeline-stage .name {
+            margin-top: 9px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .pipeline-stage .state {
+            color: #22c55e;
+            font-size: 10px;
+            margin-top: 7px;
+            letter-spacing: 1px;
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            color: #4b5563;
+            font-size: 18px;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .system {
+            background: #111827;
+            border: 1px solid #293449;
+            border-radius: 13px;
+            padding: 20px;
+        }
+
+        .system h3 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .system-status {
+            margin-top: 12px;
+            color: #22c55e;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .system p {
+            color: #9ca3af;
+            font-size: 13px;
+            margin: 9px 0 0;
+        }
+
+        .access {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 13px;
+        }
+
+        .access a {
+            text-decoration: none;
+            color: #e5e7eb;
+            background: #111827;
+            border: 1px solid #293449;
+            border-radius: 12px;
+            padding: 18px;
+            transition: 0.2s;
+        }
+
+        .access a:hover {
+            transform: translateY(-3px);
+            border-color: #818cf8;
+            background: #172033;
+        }
+
+        .access-name {
+            font-weight: bold;
+        }
+
+        .access-port {
+            color: #60a5fa;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        .architecture {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px 0;
+        }
+
+        .architecture-box {
+            padding: 16px 22px;
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .architecture-arrow {
+            color: #6366f1;
+            font-size: 22px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #1f2937;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .brand {
+                font-size: 16px;
+            }
+
+            .container {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .pipeline {
+                justify-content: flex-start;
+            }
+
+            .arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+
+        <div class="brand">
+            <div class="brand-icon">🎛️</div>
+            DEVOPS CONTROL CENTER
+        </div>
+
+        <div class="system-status">
+            <div class="status-dot"></div>
+            ALL SYSTEMS ONLINE
+        </div>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="hero">
+
+            <div class="hero-badge">
+                LOCAL DEVOPS INFRASTRUCTURE • PORT 8090
+            </div>
+
+            <h1>
+                Central <span>Control Center</span>
+            </h1>
+
+            <p>
+                A unified control interface for the local CI/CD infrastructure,
+                application environments, containers and deployment pipeline.
+            </p>
+
+        </div>
+
+
+        <div class="overview">
+
+            <div class="overview-card">
+                <div class="overview-label">Environments</div>
+                <div class="overview-value green">3 / 3</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-label">Pipeline</div>
+                <div class="overview-value green">PASSED</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-label">Docker</div>
+                <div class="overview-value blue">RUNNING</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-label">Jenkins</div>
+                <div class="overview-value purple">ONLINE</div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-label">Host</div>
+                <div class="overview-value orange">UBUNTU</div>
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+                <h2>🌐 Environment Overview</h2>
+                <div class="section-tag">3 DEPLOYMENT TARGETS</div>
+            </div>
+
+            <div class="environment-grid">
+
+                <div class="environment">
+
+                    <h3>🌐 Website</h3>
+
+                    <div class="environment-status">
+                        ● ONLINE
+                    </div>
+
+                    <div class="environment-port">
+                        localhost:8081
+                    </div>
+
+                    <div class="environment-description">
+                        Main application website running through Docker.
+                    </div>
+
+                    <a class="open-btn" href="http://localhost:8081">
+                        Open Website →
+                    </a>
+
+                </div>
+
+
+                <div class="environment">
+
+                    <h3>🧪 Staging</h3>
+
+                    <div class="environment-status">
+                        ● ONLINE
+                    </div>
+
+                    <div class="environment-port">
+                        localhost:8082
+                    </div>
+
+                    <div class="environment-description">
+                        Pre-production environment used for validation.
+                    </div>
+
+                    <a class="open-btn" href="http://localhost:8082">
+                        Open Staging →
+                    </a>
+
+                </div>
+
+
+                <div class="environment">
+
+                    <h3>🚀 Production</h3>
+
+                    <div class="environment-status">
+                        ● ONLINE
+                    </div>
+
+                    <div class="environment-port">
+                        localhost:8083
+                    </div>
+
+                    <div class="environment-description">
+                        Final deployment environment for the application.
+                    </div>
+
+                    <a class="open-btn" href="http://localhost:8083">
+                        Open Production →
+                    </a>
+
+                </div>
+
+
+                <div class="environment">
+
+                    <h3>📊 DevOps Dashboard</h3>
+
+                    <div class="environment-status">
+                        ● ONLINE
+                    </div>
+
+                    <div class="environment-port">
+                        localhost:8084
+                    </div>
+
+                    <div class="environment-description">
+                        Technical dashboard for project monitoring.
+                    </div>
+
+                    <a class="open-btn" href="http://localhost:8084">
+                        Open Dashboard →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+                <h2>🔄 CI/CD Pipeline</h2>
+                <div class="section-tag">PIPELINE PASSED</div>
+            </div>
+
+            <div class="pipeline">
+
+                <div class="pipeline-stage">
+                    <div class="icon">✓</div>
+                    <div class="name">Validate</div>
+                    <div class="state">PASSED</div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="pipeline-stage">
+                    <div class="icon">✓</div>
+                    <div class="name">Automated Tests</div>
+                    <div class="state">PASSED</div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="pipeline-stage">
+                    <div class="icon">✓</div>
+                    <div class="name">Docker Build</div>
+                    <div class="state">PASSED</div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="pipeline-stage">
+                    <div class="icon">✓</div>
+                    <div class="name">Website</div>
+                    <div class="state">PASSED</div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="pipeline-stage">
+                    <div class="icon">✓</div>
+                    <div class="name">Staging</div>
+                    <div class="state">PASSED</div>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="pipeline-stage">
+                    <div class="icon">✓</div>
+                    <div class="name">Production</div>
+                    <div class="state">ACTIVE</div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+                <h2>⚙️ Infrastructure</h2>
+                <div class="section-tag">LOCAL HOST</div>
+            </div>
+
+            <div class="system-grid">
+
+                <div class="system">
+                    <h3>🔧 Jenkins</h3>
+                    <div class="system-status">● ONLINE</div>
+                    <p>CI/CD automation server</p>
+                    <p>localhost:8080</p>
+                </div>
+
+                <div class="system">
+                    <h3>🐳 Docker</h3>
+                    <div class="system-status">● RUNNING</div>
+                    <p>Container platform</p>
+                    <p>3 application environments</p>
+                </div>
+
+                <div class="system">
+                    <h3>🐙 GitHub</h3>
+                    <div class="system-status">● CONNECTED</div>
+                    <p>Source code repository</p>
+                    <p>devops-project</p>
+                </div>
+
+                <div class="system">
+                    <h3>🖥️ Ubuntu</h3>
+                    <div class="system-status">● ONLINE</div>
+                    <p>Infrastructure host</p>
+                    <p>Virtual machine</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+                <h2>🏗️ Deployment Architecture</h2>
+                <div class="section-tag">LOCAL CI/CD</div>
+            </div>
+
+            <div class="architecture">
+
+                <div class="architecture-box">
+                    🐙 GitHub
+                    <br>
+                    <small>Source Code</small>
+                </div>
+
+                <div class="architecture-arrow">→</div>
+
+                <div class="architecture-box">
+                    🔧 Jenkins
+                    <br>
+                    <small>Automation</small>
+                </div>
+
+                <div class="architecture-arrow">→</div>
+
+                <div class="architecture-box">
+                    🐳 Docker
+                    <br>
+                    <small>Containers</small>
+                </div>
+
+                <div class="architecture-arrow">→</div>
+
+                <div class="architecture-box">
+                    🌐 Environments
+                    <br>
+                    <small>8081 / 8082 / 8083</small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+                <h2>🌐 Environment Access</h2>
+                <div class="section-tag">QUICK ACCESS</div>
+            </div>
+
+            <div class="access">
+
+                <a href="http://localhost:8081">
+                    <div class="access-name">🌐 Website</div>
+                    <div class="access-port">localhost:8081</div>
+                </a>
+
+                <a href="http://localhost:8082">
+                    <div class="access-name">🧪 Staging</div>
+                    <div class="access-port">localhost:8082</div>
+                </a>
+
+                <a href="http://localhost:8083">
+                    <div class="access-name">🚀 Production</div>
+                    <div class="access-port">localhost:8083</div>
+                </a>
+
+                <a href="http://localhost:8084">
+                    <div class="access-name">📊 DevOps Dashboard</div>
+                    <div class="access-port">localhost:8084</div>
+                </a>
+
+                <a href="http://localhost:8080">
+                    <div class="access-name">🔧 Jenkins</div>
+                    <div class="access-port">localhost:8080</div>
+                </a>
+
+                <a href="http://localhost:8085">
+                    <div class="access-name">🚨 Error Center</div>
+                    <div class="access-port">localhost:8085</div>
+                </a>
+
+                <a href="http://localhost:8086">
+                    <div class="access-name">🛠️ Troubleshooting Center</div>
+                    <div class="access-port">localhost:8086</div>
+                </a>
+
+                <a href="http://localhost:8087">
+                    <div class="access-name">📜 Deployment History</div>
+                    <div class="access-port">localhost:8087</div>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        DevOps Project • Ubuntu • Docker • Jenkins • GitHub
+        <br>
+        Central DevOps Control Center • Port 8090
+    </div>
+
+</body>
+</html>

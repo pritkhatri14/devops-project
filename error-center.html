@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Error Center</title>
+<style>
+:root {
+    --bg: #0b1120;
+    --panel: #141e30;
+    --border: #27354b;
+    --text: #e8eef8;
+    --muted: #94a3b8;
+    --cyan: #38bdf8;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --green: #4ade80;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+}
+header {
+    padding: 24px 5%;
+    border-bottom: 1px solid var(--border);
+    background: #10192a;
+}
+.brand { color: var(--cyan); font-size: 12px; letter-spacing: 2px; }
+h1 { margin: 10px 0; font-size: 30px; }
+.subtitle { color: var(--muted); font-size: 14px; }
+main { max-width: 1250px; margin: auto; padding: 28px 20px; }
+.topline {
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 15px; flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.live { color: var(--green); font-size: 13px; }
+.cards {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 15px; margin-bottom: 25px;
+}
+.card, .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+}
+.card-label { color: var(--muted); font-size: 13px; }
+.number { font-size: 30px; font-weight: bold; margin-top: 12px; }
+.red { color: var(--red); }
+.yellow { color: var(--yellow); }
+.green { color: var(--green); }
+.cyan { color: var(--cyan); }
+.panel h2 { font-size: 18px; margin: 0 0 8px; }
+.panel p { color: var(--muted); font-size: 13px; }
+.toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0;
+}
+input, select, button {
+    padding: 11px 13px; border-radius: 7px;
+    border: 1px solid var(--border); background: #0b1120;
+    color: var(--text); font-size: 13px;
+}
+input { flex: 1; min-width: 180px; }
+button { cursor: pointer; background: #075985; border-color: #075985; }
+button:hover { opacity: .85; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 780px; }
+th, td {
+    padding: 15px 12px; border-bottom: 1px solid var(--border);
+    text-align: left; font-size: 13px;
+}
+th { color: var(--muted); font-weight: normal; }
+td { line-height: 1.5; }
+.badge {
+    display: inline-block; padding: 5px 8px; border-radius: 5px;
+    font-size: 11px; font-weight: bold;
+}
+.critical { color: #fecaca; background: #7f1d1d; }
+.high { color: #fed7aa; background: #7c2d12; }
+.medium { color: #fde68a; background: #713f12; }
+.low { color: #bbf7d0; background: #14532d; }
+.status { color: var(--yellow); }
+.resolved { color: var(--green); }
+.action { padding: 7px 9px; font-size: 12px; }
+.empty { text-align: center; padding: 25px; color: var(--muted); }
+footer {
+    color: var(--muted); text-align: center; padding: 25px;
+    font-size: 12px;
+}
+@media (max-width: 750px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 24px; }
+}
+@media (max-width: 420px) {
+    .cards { grid-template-columns: 1fr 1fr; }
+    .card { padding: 14px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="brand">DEVOPS PROJECT / MONITORING</div>
+    <h1>⚠ Error Center</h1>
+    <div class="subtitle">Monitor incidents, identify problems and track resolutions.</div>
+</header>
+
+<main>
+    <div class="topline">
+        <div>
+            <strong>Incident Overview</strong>
+            <div class="subtitle">Example incidents for the project demonstration</div>
+        </div>
+        <div class="live">● ERROR CENTER ONLINE</div>
+    </div>
+
+    <section class="cards">
+        <div class="card">
+            <div class="card-label">Total Incidents</div>
+            <div class="number cyan" id="total">4</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Open Incidents</div>
+            <div class="number red" id="open">3</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Critical Incidents</div>
+            <div class="number yellow" id="critical">1</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Resolved Incidents</div>
+            <div class="number green" id="resolved">1</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Incident Register</h2>
+        <p>These are sample incidents, not automatically collected live errors.</p>
+
+        <div class="toolbar">
+            <input id="search" type="search" placeholder="Search incidents or services...">
+            <select id="severity">
+                <option value="all">All severities</option>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+            <button id="addError">+ Add Demo Incident</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>INCIDENT</th>
+                        <th>SERVICE</th>
+                        <th>SEVERITY</th>
+                        <th>SUGGESTED RESOLUTION</th>
+                        <th>STATUS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="incidentRows"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>DevOps Error Center · Ubuntu · Docker · Jenkins</footer>
+
+<script>
+const incidents = [
+    {
+        id: "ERR-001", service: "Jenkins Pipeline",
+        severity: "Critical",
+        fix: "Check the Jenkins console log and failing pipeline stage.",
+        status: "Open"
+    },
+    {
+        id: "ERR-002", service: "Docker Deployment",
+        severity: "High",
+        fix: "Check container status, image name and Docker logs.",
+        status: "Open"
+    },
+    {
+        id: "ERR-003", service: "Staging Website",
+        severity: "Medium",
+        fix: "Check port 8082 and verify the staging container is running.",
+        status: "Open"
+    },
+    {
+        id: "ERR-004", service: "Development Website",
+        severity: "Low",
+        fix: "Example incident resolved for demonstration purposes.",
+        status: "Resolved"
+    }
+];
+
+const rows = document.getElementById("incidentRows");
+const search = document.getElementById("search");
+const severity = document.getElementById("severity");
+
+function render() {
+    const query = search.value.toLowerCase();
+    const selectedSeverity = severity.value;
+
+    const filtered = incidents.filter(item => {
+        const matchesText =
+            (item.id + " " + item.service + " " + item.fix + " " + item.status)
+            .toLowerCase().includes(query);
+        const matchesSeverity =
+            selectedSeverity === "all" || item.severity === selectedSeverity;
+        return matchesText && matchesSeverity;
+    });
+
+    document.getElementById("total").textContent = incidents.length;
+    document.getElementById("open").textContent =
+        incidents.filter(item => item.status === "Open").length;
+    document.getElementById("critical").textContent =
+        incidents.filter(item => item.severity === "Critical" && item.status === "Open").length;
+    document.getElementById("resolved").textContent =
+        incidents.filter(item => item.status === "Resolved").length;
+
+    if (filtered.length === 0) {
+        rows.innerHTML = '<tr><td colspan="6" class="empty">No matching incidents found.</td></tr>';
+        return;
+    }
+
+    rows.innerHTML = filtered.map(item => {
+        const severityClass = item.severity.toLowerCase();
+        const statusClass = item.status === "Resolved" ? "resolved" : "status";
+        const action = item.status === "Open"
+            ? `<button class="action" data-resolve="${item.id}">Resolve</button>`
+            : '<span class="resolved">Completed</span>';
+
+        return `<tr>
+            <td><strong>${item.id}</strong></td>
+            <td>${item.service}</td>
+            <td><span class="badge ${severityClass}">${item.severity}</span></td>
+            <td>${item.fix}</td>
+            <td><span class="${statusClass}">${item.status}</span></td>
+            <td>${action}</td>
+        </tr>`;
+    }).join("");
+}
+
+rows.addEventListener("click", event => {
+    const id = event.target.dataset.resolve;
+    if (!id) return;
+
+    const item = incidents.find(entry => entry.id === id);
+    if (item) item.status = "Resolved";
+    render();
+});
+
+document.getElementById("addError").addEventListener("click", () => {
+    const number = incidents.length + 1;
+    incidents.unshift({
+        id: "ERR-" + String(number).padStart(3, "0"),
+        service: "Demo Service",
+        severity: "Medium",
+        fix: "Inspect the relevant service logs and verify its configuration.",
+        status: "Open"
+    });
+    render();
+});
+
+search.addEventListener("input", render);
+severity.addEventListener("change", render);
+render();
+</script>
+</body>
+</html>
